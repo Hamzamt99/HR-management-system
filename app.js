@@ -1,17 +1,17 @@
 'use strict';
 
-let Employees=[];
-
-    function Employee(Name, Department, Level, Image,id) {
+    function Employee(Name, Department, Level, Image,id,Salary) {
         this.id = id ? id : this.id();
         this.Name = Name;
         this.Department = Department;
         this.Level = Level;
         this.Image = Image
-        // this.Salary = this.Salary();
-        // this.SalaryAfterTax = this.netSalary();
-        Employees.push(this);
+        this.Salary = Salary ? Salary  : this.Salary();
+        this.SalaryAfterTax = this.Salary * 0.925 ;
+        Employee.allEmployees.push(this);
     }
+
+    Employee.allEmployees = [];
 
 Employee.prototype.id = function(){
 
@@ -40,25 +40,52 @@ Employee.prototype.Salary = function(){
     return Math.floor(Math.random() * (1000 - 500)) + 500;
    }
 }
-Employee.prototype.netSalary = function() {
 
-    return this.Salary - (this.Salary * 0.075);
-}
-// new objects
-const ghaziSamer = new Employee( "Ghazi Samer", "Administration", "Senior", "assets/Ghazi.jpg",1000);
 
-const lanaAli = new Employee( "Lana Ali", "Finance", "Senior", "assets/Lana.jpg",1001);
+// render
+Employee.prototype.render = function() {
 
-const tamaraAyoub = new Employee( "Tamara Ayoub", "Marketing", "Senior", "assets/Tamara.jpg",1002);
+    const card = document.getElementById('card');
 
-const safiwalid = new Employee( "Safi Walid", "Administration", "Mid-Senior", "assets/Safi.jpg",1003);
+    card.innerHTML = '';
 
-const omarZaid = new Employee( "Omar Zaid", "Development", "Senior", "assets/Omar.jpg",1004);
-
-const ranaSaleh = new Employee("Rana Saleh", "Development", "Junior", "assets/Rana.jpg",1005);
-
-const hadiAhmad = new Employee("Hadi Ahmad", "Finance", "Mid-Senior", "assets/Hadi.jpg",1006);
-
+    for(let i =0; i < Employee.allEmployees.length ; i++){
+    
+        let obj = Employee.allEmployees[i];
+    
+        const divEl = document.createElement('div');
+        
+        divEl.classList.add('card-content')
+        
+        card.appendChild(divEl);
+        
+        const img = document.createElement('img')
+        
+        img.src = obj.Image;
+        
+        divEl.appendChild(img)
+        
+        const h4El = document.createElement('h4')
+        
+        h4El.textContent = `Name: ${obj.Name} -ID: ${obj.id}` 
+        
+        divEl.appendChild(h4El);
+        
+        const h4Ele = document.createElement('h4')
+        
+        h4Ele.textContent = `Department:${obj.Department} Level:${obj.Level}` 
+        
+        divEl.appendChild(h4Ele);
+        
+        const h4E = document.createElement('h4')
+        
+        h4E.textContent =  obj.id
+        
+        divEl.appendChild(h4E);
+        
+        }
+    
+    }
 
 //store data 
 
@@ -80,62 +107,43 @@ function card(e){
 
     const NewEmployee = new Employee(Name,Department,Level,Image)
     
-
     NewEmployee.render();
 
+    storeData();
+    
     }   
 
-
-// render
-Employee.prototype.render = function() {
-
-const card = document.getElementById('card');
-
-const divEl = document.createElement('div');
-
-divEl.classList.add('card-content')
-
-card.appendChild(divEl);
-
-const img = document.createElement('img')
-
-img.src = this.Image;
-
-divEl.appendChild(img)
-
-const h4El = document.createElement('h4')
-
-h4El.textContent = `Name: ${this.Name} -ID: ${this.id}` 
-
-divEl.appendChild(h4El);
-
-const h4Ele = document.createElement('h4')
-
-h4Ele.textContent = `Department:${this.Department} Level:${this.Level}` 
-
-divEl.appendChild(h4Ele);
-
-const h4E = document.createElement('h4')
-
-h4E.textContent =  this.id
-
-divEl.appendChild(h4E);
-
-}
-
-
-
-//function for array
-function Array(arr){
-    for(let i =0 ;i < arr.length;i++){
-        arr[i].render();
+    // store data in local storage 
+    function storeData(){
+        let Data = JSON.stringify(Employee.allEmployees)
+       localStorage.setItem('Employees',Data)
     }
-    return arr;
-}
 
-Array(Employees);
+    //get data from local storage 
+    function getData(){
 
-console.log(Employees)
+        let getD = localStorage.getItem('Employees')
+
+        let stringArr = JSON.parse(getD);
+
+        if(stringArr !== null){
+
+            for( let i =0 ; i < stringArr.length; i++){
+
+                new Employee(stringArr[i].Name,stringArr[i].Department,stringArr[i].Level,stringArr[i].Image,stringArr[i].id)
+
+                Employee.allEmployees[i].render();
+            }
+            
+        }
+
+    }
+    getData();
+
+
+
+
+
 
 
 
